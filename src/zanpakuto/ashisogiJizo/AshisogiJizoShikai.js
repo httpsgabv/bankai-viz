@@ -7,11 +7,11 @@ import { SeekForce } from '../../sim/forces/SeekForce.js';
 import { FlowForce } from '../../sim/forces/FlowForce.js';
 import { ConstantForce } from '../../sim/forces/ConstantForce.js';
 import { OrbitTargets } from '../../sim/targets/OrbitTargets.js';
+import { AimController } from '../../sim/AimController.js';
 import { Sequence } from '../../utils/Sequence.js';
 import { easeOutCubic } from '../../utils/math.js';
 
 const PIVOT = new THREE.Vector3(0, 1.7, 0);
-const UP = new THREE.Vector3(0, 1, 0);
 const LUNGE_DURATION = 0.4;
 const STRIKE_JET = 2.4;
 const NERVE_BOUNDS = { min: [-9, 0.3, -5], max: [9, 7.8, 3] };
@@ -24,11 +24,10 @@ const GRID_BOUNDS = { min: [-14, -1, -10], max: [14, 12, 8], cellSize: 1 };
  */
 export class AshisogiJizoShikai extends Release {
   #open = 0;
-  #aim = UP.clone();
+  #aimer = new AimController();
   #lungeTime = -1;
   #jetBoost = 1;
   #tips = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
-  #desired = new THREE.Vector3();
   #orbitCenter = new THREE.Vector3();
 
   constructor(context) {
@@ -83,7 +82,7 @@ export class AshisogiJizoShikai extends Release {
     this.#jetBoost = STRIKE_JET;
     this.field.lifecycle.burst(this.params.burst);
     this.#jetBoost = 1;
-    const strikePoint = this.#aim.clone().multiplyScalar(this.trident.reach + this.params.lunge).add(this.trident.group.position);
+    const strikePoint = this.#aimer.direction.clone().multiplyScalar(this.trident.reach + this.params.lunge).add(this.trident.group.position);
     this.field.web.network.paralyseSphere(strikePoint, 1.8, 0.9);
   }
 
@@ -128,12 +127,8 @@ export class AshisogiJizoShikai extends Release {
     const group = this.trident.group;
     const base = PIVOT.clone().add(pointer.depthOffset);
 
-    this.#desired.subVectors(pointer.world, base);
-    if (this.#desired.length() < 0.8) this.#desired.copy(this.#aim);
-    this.#desired.normalize().lerp(UP, 1 - pointer.presence * this.#open);
-    this.#desired.y = Math.max(this.#desired.y, -0.3);
-    this.#aim.lerp(this.#desired.normalize(), 1 - Math.exp(-6 * dt)).normalize();
-    group.quaternion.setFromUnitVectors(UP, this.#aim);
+    this.#aimer.update(dt, base, pointer.world, pointer.presence * this.#open);
+    group.quaternion.copy(this.#aimer.quaternion);
 
     let thrust = 0;
     if (this.#lungeTime >= 0) {
@@ -142,7 +137,7 @@ export class AshisogiJizoShikai extends Release {
       thrust = Math.sin(Math.PI * t) * this.params.lunge;
       if (t >= 1) this.#lungeTime = -1;
     }
-    group.position.copy(base).addScaledVector(this.#aim, thrust);
+    group.position.copy(base).addScaledVector(this.#aimer.direction, thrust);
     group.updateMatrixWorld(true);
     this.trident.tipPositions(this.#tips);
   }
@@ -152,7 +147,7 @@ export class AshisogiJizoShikai extends Release {
     const speed = this.params.jetSpeed * this.#jetBoost * (0.6 + Math.random() * 0.6);
     for (let axis = 0; axis < 3; axis++) {
       out.position[axis] = tip.getComponent(axis) + (Math.random() - 0.5) * 0.12;
-      out.velocity[axis] = this.#aim.getComponent(axis) * speed + (Math.random() - 0.5) * 1.2 * this.#jetBoost;
+      out.velocity[axis] = this.#aimer.direction.getComponent(axis) * speed + (Math.random() - 0.5) * 1.2 * this.#jetBoost;
     }
   }
 
