@@ -1,0 +1,108 @@
+.control {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.control__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.control__label {
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.control__value {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+/* Range ------------------------------------------------------------------ */
+
+.control__range {
+  --fill: 50%;
+  width: 100%;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+
+.control__range::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill), var(--line) var(--fill));
+}
+
+.control__range::-moz-range-track {
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill), var(--line) var(--fill));
+}
+
+.control__range::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--surface-solid);
+  transition: transform 0.2s var(--ease);
+}
+
+.control__range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--surface-solid);
+}
+
+.control__range:active::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+
+/* Colour ----------------------------------------------------------------- */
+
+.control--color {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control__color-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control__color {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.control__color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.control__color::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+
+.control__color::-moz-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}

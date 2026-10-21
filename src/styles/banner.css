@@ -1,0 +1,55 @@
+.banner {
+  position: fixed;
+  top: 16vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--gutter));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease);
+}
+
+.banner.is-visible {
+  opacity: 1;
+}
+
+.banner__eyebrow {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  letter-spacing: 0.6em;
+  color: var(--accent);
+}
+
+.banner__kanji {
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  transition: letter-spacing 2.6s var(--ease);
+}
+
+.banner.is-visible .banner__kanji {
+  letter-spacing: 0.28em;
+}
+
+.banner__romaji {
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.banner__translation {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-faint);
+}

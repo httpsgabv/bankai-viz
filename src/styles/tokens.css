@@ -1,0 +1,31 @@
+:root {
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+
+  --ink: #1b1a1f;
+  --ink-soft: rgba(27, 26, 31, 0.56);
+  --ink-faint: rgba(27, 26, 31, 0.3);
+  --line: rgba(27, 26, 31, 0.08);
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-solid: #ffffff;
+  --accent: #e4799a;
+
+  --gutter: 28px;
+  --radius: 14px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-tone='dark'] {
+  --ink: #f4f1f2;
+  --ink-soft: rgba(244, 241, 242, 0.62);
+  --ink-faint: rgba(244, 241, 242, 0.3);
+  --line: rgba(244, 241, 242, 0.12);
+  --surface: rgba(20, 19, 23, 0.66);
+  --surface-solid: #141317;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+  }
+}
