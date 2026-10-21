@@ -27,6 +27,11 @@ npm run dev
 - **Shikai — "Unare, Haineko"**: the blade crumbles into a cloud of ash that prowls after the cursor. Fast-moving ash glows like embers and slices the floating blocks it passes through. Tap to lash the ash along your motion; hold to wind it into a flat, spinning cutting vortex.
 - **Bankai**: never revealed in the story, so it shows as locked.
 
+## Hōzukimaru
+
+- **Shikai — "Nobiro, Hōzukimaru"**: the spear extends and is held by its end at the cursor, swinging with momentum through a night of hanging hōzuki lanterns that swing and flare when struck. Tap to split it into the three-section staff (sansetsukon) on chains, or join it back; hold to twirl.
+- **Bankai — "Ryūmon Hōzukimaru"**: a crescent axe, a great curved blade and a broad spearhead whirl on chains around a dragon crest that follows the cursor. Fast moves or holding spin them harder; smashed stone pillars fill the 龍 crest with red. Tap to slam a shockwave; with a full crest the slam is unleashed across the whole field.
+
 Pick a zanpakutō from the title in the top-left (or press `Z`). Scroll moves the cursor's 3D target nearer or farther. Shortcuts: `1`/`2` switch release, `Z` next zanpakutō, `Space` replay, `H` hide UI, `C` config panel.
 
 ## Structure
@@ -37,21 +42,23 @@ src/
   engine/         Stage (renderer/scene/fog), CameraRig, Pointer (mouse → 3D), Loop
   sim/            CPU simulations: particle swarm + lifecycle, density grid,
                   nerve network, segment chain (snake bodies), voxel sculpture,
-                  crescent blasts, aim controller
+                  crescent blasts, aim controller, section staff, pendulums
     forces/       Seek, Swirl, Flow (turbulence), Bounds, Constant — composable per release
     targets/      Where particles want to go: Trail (ribbon), Orbit (storm), Anchor (reform)
   render/
     petals/       Instanced petal geometry, shaders, mesh
     blades/       Blade profile/geometry, dissolve shader, Katana, BladeRows, Trident, Shikomizue
     creatures/    Jizō head, Konjiki creature, Benihime figure
-    energy/       Crescent blasts, hex shield, needle & thread, stitches
+    energy/       Crescent blasts, hex shield, needle & thread, stitches, shockwaves
+    weapons/      Section staff, Ryūmon weapons, dragon crest, chain links
     motes/        Ink motes
     voxels/       Instanced voxel sculpture
     gas/          Point-sprite poison gas
     neural/       Nerve web lines, nodes and pulses
     environment/  Fog-blended floor with soft shadow
   effects/        Simulation + rendering glue: PetalStorm, PoisonCloud, NeuralWeb, MoteField,
-                  DisintegratingBlade (blade ⇄ particles), SliceTargets
+                  DisintegratingBlade (blade ⇄ particles), SliceTargets, HozukiLanterns,
+                  BreakablePillars
   zanpakuto/
     Release.js    Base class for any release
     registry.js   List of zanpakutō
@@ -59,6 +66,7 @@ src/
     ashisogiJizo/ Descriptor, shikai, bankai, ToxicField, param schemas
     benihime/     Descriptor, shikai, bankai, param schemas
     haineko/      Descriptor, shikai (bankai locked), param schema
+    hozukimaru/   Descriptor, shikai, bankai, param schemas
   ui/             HUD, release switch, banner, schema-driven control panel
   utils/          Math, Sequence (timelines), ParamSource (tweakable params), etc.
 ```

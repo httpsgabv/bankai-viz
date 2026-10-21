@@ -63,7 +63,7 @@ export class App {
     if (!definition || definition.locked) return;
 
     this.#release?.dispose();
-    const release = definition.create({ stage: this.stage, pointer: this.pointer, floorY: FLOOR_Y });
+    const release = definition.create({ stage: this.stage, pointer: this.pointer, cameraRig: this.rig, floorY: FLOOR_Y });
     release.mount();
     this.#release = release;
     this.#releaseId = releaseId;

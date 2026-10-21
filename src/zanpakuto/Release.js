@@ -7,7 +7,7 @@ import { disposeObject } from '../utils/dispose.js';
  * A release owns everything it puts in the scene under `root`, exposes tweakable params
  * through its schema, and tells the app how to frame it via `view`.
  *
- * context: { stage, pointer, floorY }
+ * context: { stage, pointer, cameraRig, floorY }
  */
 export class Release extends ParamSource {
   /** Point the floor shadow follows. */

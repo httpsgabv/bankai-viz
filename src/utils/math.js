@@ -21,3 +21,13 @@ export function randomUnitVector(out, offset = 0) {
   out[offset + 2] = z;
   return out;
 }
+
+/** Parameter t in [0, 1] of the point on segment a→b closest to p (all THREE.Vector3). */
+export function closestOnSegment(p, a, b) {
+  const abx = b.x - a.x;
+  const aby = b.y - a.y;
+  const abz = b.z - a.z;
+  const lengthSq = abx * abx + aby * aby + abz * abz;
+  if (lengthSq < 1e-9) return 0;
+  return clamp01(((p.x - a.x) * abx + (p.y - a.y) * aby + (p.z - a.z) * abz) / lengthSq);
+}
