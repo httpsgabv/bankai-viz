@@ -6,10 +6,10 @@ import { KonjikiCreature } from '../../render/creatures/KonjikiCreature.js';
 import { FlowForce } from '../../sim/forces/FlowForce.js';
 import { ConstantForce } from '../../sim/forces/ConstantForce.js';
 import { BoundsForce } from '../../sim/forces/BoundsForce.js';
+import { SlitherSteering } from '../../sim/SlitherSteering.js';
 import { Sequence } from '../../utils/Sequence.js';
 import { damp } from '../../utils/math.js';
 
-const UP = new THREE.Vector3(0, 1, 0);
 const ARENA_CENTER = new THREE.Vector3(0, 4, -5);
 const BURROW_DEPTH = -9;
 const TRICKLE_RATE = 120;
@@ -27,15 +27,13 @@ export class KonjikiAshisogiJizoBankai extends Release {
   #breathing = false;
   #hue = 0;
   #floorClamp = BURROW_DEPTH;
-  #headVelocity = new THREE.Vector3();
   #target = new THREE.Vector3();
   #mouth = new THREE.Vector3();
-  #steer = new THREE.Vector3();
-  #side = new THREE.Vector3();
   #lure = new THREE.Vector3();
 
   constructor(context) {
     super(context, bankaiSchema);
+    this.steering = new SlitherSteering();
     this.flow = new FlowForce();
     this.flow.frequency = 0.22;
     this.buoyancy = new ConstantForce(0, 0.25, 0);
@@ -133,7 +131,7 @@ export class KonjikiAshisogiJizoBankai extends Release {
     this.root.add(this.creature.group, ...this.field.objects);
     this.field.lifecycle.emit = (i, out) => this.#emitFromMouth(out);
     this.field.applyParams(this.params);
-    this.#headVelocity.set(0, 0, 0);
+    this.steering.reset();
   }
 
   #emergeSteps() {
@@ -172,16 +170,8 @@ export class KonjikiAshisogiJizoBankai extends Release {
       roam.y = Math.max(roam.y, this.context.floorY + p.size * 1.6);
     }
 
-    const speed = this.#mode === 'hunt' ? p.speed : 7;
-    this.#steer.subVectors(this.#target, head).multiplyScalar(2);
-    if (this.#steer.length() > speed) this.#steer.setLength(speed);
-    this.#headVelocity.lerp(this.#steer, 1 - Math.exp(-3 * dt));
-
-    // Side-to-side slither, perpendicular to the direction of travel.
-    this.#side.crossVectors(this.#headVelocity, UP);
-    if (this.#side.lengthSq() > 1e-6) this.#side.normalize();
-    const wave = Math.cos(time * 3.2) * p.slither * Math.min(1, this.#headVelocity.length() / 3);
-    head.addScaledVector(this.#headVelocity, dt).addScaledVector(this.#side, wave * dt * 3);
+    this.steering.slither = p.slither;
+    this.steering.steer(dt, time, head, this.#target, this.#mode === 'hunt' ? p.speed : 7);
   }
 
   #emitFromMouth(out) {

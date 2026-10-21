@@ -32,6 +32,11 @@ npm run dev
 - **Shikai — "Nobiro, Hōzukimaru"**: the spear extends and is held by its end at the cursor, swinging with momentum through a night of hanging hōzuki lanterns that swing and flare when struck. Tap to split it into the three-section staff (sansetsukon) on chains, or join it back; hold to twirl.
 - **Bankai — "Ryūmon Hōzukimaru"**: a crescent axe, a great curved blade and a broad spearhead whirl on chains around a dragon crest that follows the cursor. Fast moves or holding spin them harder; smashed stone pillars fill the 龍 crest with red. Tap to slam a shockwave; with a full crest the slam is unleashed across the whole field.
 
+## Hyōrinmaru
+
+- **Shikai — "Sōten ni zase, Hyōrinmaru"**: an ice dragon bursts from the blade and flies after the cursor through falling snow, leaving cracked, sparkling frost wherever it skims the ground. Tap to make it dive and erupt ice crystals; hold to have it coil around the cursor in a blizzard.
+- **Bankai — "Daiguren Hyōrinmaru"**: great ice wings and a tail follow the cursor, with three ice flowers above whose petals fall one by one as the bankai's time runs out. Tap for *Hyōten Hyakkasō* — snow falls and blooms into ice flowers where it lands. Hold for *Sennen Hyōrō* — ice pillars burst up and close in; release shatters them.
+
 Pick a zanpakutō from the title in the top-left (or press `Z`). Scroll moves the cursor's 3D target nearer or farther. Shortcuts: `1`/`2` switch release, `Z` next zanpakutō, `Space` replay, `H` hide UI, `C` config panel.
 
 ## Structure
@@ -42,23 +47,27 @@ src/
   engine/         Stage (renderer/scene/fog), CameraRig, Pointer (mouse → 3D), Loop
   sim/            CPU simulations: particle swarm + lifecycle, density grid,
                   nerve network, segment chain (snake bodies), voxel sculpture,
-                  crescent blasts, aim controller, section staff, pendulums
+                  crescent blasts, aim controller, section staff, pendulums,
+                  slither steering, frost grid
     forces/       Seek, Swirl, Flow (turbulence), Bounds, Constant — composable per release
     targets/      Where particles want to go: Trail (ribbon), Orbit (storm), Anchor (reform)
   render/
     petals/       Instanced petal geometry, shaders, mesh
     blades/       Blade profile/geometry, dissolve shader, Katana, BladeRows, Trident, Shikomizue
-    creatures/    Jizō head, Konjiki creature, Benihime figure
+    creatures/    Jizō head, Konjiki creature, Benihime figure, ice dragon, Daiguren wings
+    geometry/     Shared shapes (ice crystal)
+    materials/    Shared materials (ice)
     energy/       Crescent blasts, hex shield, needle & thread, stitches, shockwaves
     weapons/      Section staff, Ryūmon weapons, dragon crest, chain links
     motes/        Ink motes
     voxels/       Instanced voxel sculpture
     gas/          Point-sprite poison gas
     neural/       Nerve web lines, nodes and pulses
-    environment/  Fog-blended floor with soft shadow
+    environment/  Fog-blended floor with soft shadow, frost shader
   effects/        Simulation + rendering glue: PetalStorm, PoisonCloud, NeuralWeb, MoteField,
                   DisintegratingBlade (blade ⇄ particles), SliceTargets, HozukiLanterns,
-                  BreakablePillars
+                  BreakablePillars, DebrisField, FrostField, Snowfall, IceCrystals,
+                  IceBloom, IcePrison
   zanpakuto/
     Release.js    Base class for any release
     registry.js   List of zanpakutō
@@ -67,6 +76,7 @@ src/
     benihime/     Descriptor, shikai, bankai, param schemas
     haineko/      Descriptor, shikai (bankai locked), param schema
     hozukimaru/   Descriptor, shikai, bankai, param schemas
+    hyorinmaru/   Descriptor, shikai, bankai, IceRealm, param schemas
   ui/             HUD, release switch, banner, schema-driven control panel
   utils/          Math, Sequence (timelines), ParamSource (tweakable params), etc.
 ```

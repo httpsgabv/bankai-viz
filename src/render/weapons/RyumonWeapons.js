@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { BladeProfile } from '../blades/BladeProfile.js';
 import { createBladeGeometry } from '../blades/createBladeGeometry.js';
 import { createBladeMaterial } from '../blades/createBladeMaterial.js';
+import { createCrescentBladeGeometry } from '../blades/createCrescentBladeGeometry.js';
 import { ChainLinks } from './ChainLinks.js';
 import { createCrestMaterial } from './createCrestMaterial.js';
 
@@ -10,16 +11,6 @@ const HANDLE_START = 1.7;
 const GUANDAO = new BladeProfile({ length: 2.4, width: 0.75, thickness: 0.09, curvature: 0.12, tipStart: 0.72, taper: 0.1 });
 const SPEARHEAD = new BladeProfile({ length: 2.0, width: 0.55, thickness: 0.08, curvature: 0, tipStart: 0.5, taper: 0 });
 const HIT_POINTS_PER_ARM = 4;
-
-/** Crescent axe head in the XY plane, convex cutting edge facing +x. */
-function createAxeGeometry() {
-  const shape = new THREE.Shape();
-  shape.absarc(0, 0, 1.35, -1.15, 1.15, false);
-  shape.absarc(-0.55, 0, 1.05, 1.0, -1.0, true);
-  const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.1, bevelEnabled: true, bevelSize: 0.04, bevelThickness: 0.04, bevelSegments: 2, curveSegments: 36 });
-  geometry.translate(-0.55, 0, -0.05);
-  return geometry;
-}
 
 /**
  * Ryūmon Hōzukimaru: a giant crescent axe, a great curved blade and a broad spearhead,
@@ -42,7 +33,7 @@ export class RyumonWeapons {
     const axeSteel = new THREE.MeshStandardMaterial({ color: '#c3c7cf', metalness: 0.35, roughness: 0.3 });
 
     const heads = [
-      new THREE.Mesh(createAxeGeometry(), axeSteel),
+      new THREE.Mesh(createCrescentBladeGeometry(), axeSteel),
       this.#bladeHead(GUANDAO, steel),
       this.#bladeHead(SPEARHEAD, steel),
     ];
