@@ -12,7 +12,7 @@ import { bindShortcuts } from '../ui/shortcuts.js';
 
 const FLOOR_Y = 0;
 
-/** Wires the 3D stage, the active release and the UI together. */
+/** Wires the 3D stage, the active zanpakutō release and the UI together. */
 export class App {
   #release = null;
   #releaseId = null;
@@ -26,9 +26,9 @@ export class App {
     this.stage.scene.add(this.floor.mesh);
     this.settings = new SceneSettings({ stage: this.stage, rig: this.rig, floor: this.floor });
 
-    this.zanpakuto = zanpakutoRegistry[0];
     this.hud = new Hud(root, {
-      zanpakuto: this.zanpakuto,
+      zanpakutoList: zanpakutoRegistry,
+      onSelectZanpakuto: (id) => this.selectZanpakuto(id),
       onSelectRelease: (id) => this.activate(id),
       onReplay: () => this.#release?.replay(),
     });
@@ -37,28 +37,30 @@ export class App {
 
     this.pointer.on('down', () => this.#release?.onPointerDown());
     this.pointer.on('up', () => this.#release?.onPointerUp());
-
-    const [first, second] = this.zanpakuto.releases;
-    bindShortcuts({
-      1: () => this.activate(first.id),
-      2: () => second && this.activate(second.id),
-      space: () => this.#release?.replay(),
-      h: () => this.hud.toggleHidden(),
-      c: () => this.panel.toggle(),
-      escape: () => this.panel.setOpen(false),
-    });
+    this.#bindShortcuts();
 
     this.loop = new Loop((dt, time) => this.#tick(dt, time));
   }
 
   start() {
-    this.activate(this.zanpakuto.releases[0].id);
+    this.selectZanpakuto(zanpakutoRegistry[0].id);
     this.loop.start();
+  }
+
+  selectZanpakuto(id) {
+    const zanpakuto = zanpakutoRegistry.find((entry) => entry.id === id);
+    if (!zanpakuto || zanpakuto === this.zanpakuto) return;
+    this.zanpakuto = zanpakuto;
+    this.#releaseId = null;
+    this.settings.setTheme(zanpakuto.theme);
+    this.hud.setZanpakuto(zanpakuto);
+    this.activate(zanpakuto.releases[0].id);
   }
 
   activate(releaseId) {
     if (releaseId === this.#releaseId) return;
     const definition = this.zanpakuto.releases.find((release) => release.id === releaseId);
+    if (!definition) return;
 
     this.#release?.dispose();
     const release = definition.create({ stage: this.stage, pointer: this.pointer, floorY: FLOOR_Y });
@@ -75,9 +77,30 @@ export class App {
     this.hud.setRelease(definition);
     this.banner.show(definition.banner);
     this.panel.bind({
-      title: definition.title,
+      title: `${this.zanpakuto.name} · ${definition.title}`,
       sources: [release, this.settings],
       actions: [{ label: 'Replay release', onClick: () => this.#release.replay() }],
+    });
+  }
+
+  #cycleZanpakuto() {
+    const index = zanpakutoRegistry.indexOf(this.zanpakuto);
+    this.selectZanpakuto(zanpakutoRegistry[(index + 1) % zanpakutoRegistry.length].id);
+  }
+
+  #bindShortcuts() {
+    const releaseAt = (index) => () => {
+      const release = this.zanpakuto.releases[index];
+      if (release) this.activate(release.id);
+    };
+    bindShortcuts({
+      1: releaseAt(0),
+      2: releaseAt(1),
+      z: () => this.#cycleZanpakuto(),
+      space: () => this.#release?.replay(),
+      h: () => this.hud.toggleHidden(),
+      c: () => this.panel.toggle(),
+      escape: () => this.panel.setOpen(false),
     });
   }
 
@@ -87,6 +110,7 @@ export class App {
     this.pointer.update(this.stage.camera, dt);
     this.#release.update(dt, time);
     this.floor.setFocus(this.#release.focus);
+    this.hud.setStatus(this.#release.status);
     this.stage.render();
   }
 }

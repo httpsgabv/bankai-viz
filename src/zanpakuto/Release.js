@@ -28,6 +28,11 @@ export class Release extends ParamSource {
     this.context.stage.scene.add(this.root);
   }
 
+  /** Optional short live readout shown in the HUD (e.g. "Paralysis 40%"), or null. */
+  get status() {
+    return null;
+  }
+
   update(_dt, _time) {}
 
   /** Seal the zanpakutō again and re-run the release. */

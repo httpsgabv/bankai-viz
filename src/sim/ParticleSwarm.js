@@ -1,9 +1,9 @@
 /**
- * CPU particle simulation stored in flat typed arrays (shared directly with the GPU buffers).
- * Petals are either pinned (hidden, sitting on an anchor) or free (driven by forces).
+ * Generic CPU particle simulation stored in flat typed arrays (shared directly with the GPU buffers).
+ * Particles are either pinned (hidden, sitting on an anchor) or free (driven by forces).
  * Forces implement `accumulate(swarm, index, outForce, context)`.
  */
-export class PetalSwarm {
+export class ParticleSwarm {
   forces = [];
   drag = 1;
   maxSpeed = 20;

@@ -15,58 +15,6 @@ body.ui-hidden .panel {
   pointer-events: none;
 }
 
-/* Title ------------------------------------------------------------------ */
-
-.hud-title {
-  position: absolute;
-  top: var(--gutter);
-  left: var(--gutter);
-  display: flex;
-  gap: 14px;
-  user-select: none;
-  pointer-events: none;
-}
-
-.hud-title__kanji {
-  writing-mode: vertical-rl;
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  color: var(--ink);
-}
-
-.hud-title__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 2px;
-}
-
-.hud-title__name {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-}
-
-.hud-title__command {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 15px;
-  font-style: italic;
-  color: var(--ink-soft);
-}
-
-.hud-title__wielder {
-  margin: 0;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-
 /* Toolbar ---------------------------------------------------------------- */
 
 .hud-toolbar {
@@ -96,7 +44,26 @@ body.ui-hidden .panel {
   pointer-events: none;
 }
 
+/* Status --------------------------------------------------------------- */
+
+.hud-status {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--gutter);
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  pointer-events: none;
+}
+
 @media (max-width: 640px) {
+  .hud-status {
+    bottom: calc(var(--gutter) + 56px);
+  }
+
   .hud-hints {
     display: none;
   }

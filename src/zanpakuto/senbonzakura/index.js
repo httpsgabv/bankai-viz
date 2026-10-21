@@ -6,6 +6,7 @@ export const senbonzakura = {
   name: 'Senbonzakura',
   kanji: '千本桜',
   wielder: 'Kuchiki Byakuya',
+  theme: { background: '#ffffff', shadow: '#d8c1c9', accent: '#e4799a' },
   releases: [
     {
       id: 'shikai',

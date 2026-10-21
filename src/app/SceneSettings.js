@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { ParamSource } from '../utils/ParamSource.js';
 
-const schema = [
+const createSchema = () => [
   {
     group: 'Scene',
     controls: [
@@ -12,12 +12,22 @@ const schema = [
   },
 ];
 
-/** App-wide settings that apply to every release. */
+/**
+ * App-wide settings that apply to every release. Each zanpakutō brings a theme
+ * ({ background, shadow, accent }) that becomes the new default for these settings.
+ */
 export class SceneSettings extends ParamSource {
   constructor({ stage, rig, floor }) {
-    super(schema);
+    super(createSchema());
     Object.assign(this, { stage, rig, floor });
     this.onParamsChanged(this.definitions);
+  }
+
+  setTheme({ background, shadow, accent }) {
+    this.definition('background').value = background;
+    this.floor.setShadowColor(shadow);
+    document.documentElement.style.setProperty('--accent', accent);
+    this.setParam('background', background);
   }
 
   onParamsChanged(definitions) {
@@ -32,6 +42,7 @@ export class SceneSettings extends ParamSource {
   #applyBackground(color) {
     this.stage.setBackground(color);
     this.floor.setBaseColor(color);
+    document.body.style.background = color;
     // Keep the UI readable when the ambient goes dark.
     const { r, g, b } = new THREE.Color(color);
     const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;

@@ -22,7 +22,7 @@ export class ControlPanel {
       this.body,
       el('footer', { class: 'panel__footer' }, [
         this.actions,
-        el('p', { class: 'panel__shortcuts', text: '1/2 switch · Space replay · H hide · C panel' }),
+        el('p', { class: 'panel__shortcuts', text: '1/2 release · Z zanpakutō · Space replay · H hide · C panel' }),
       ]),
     ]);
     parent.append(this.element);

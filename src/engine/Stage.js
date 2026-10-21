@@ -36,6 +36,11 @@ export class Stage {
     return this.renderer.domElement;
   }
 
+  /** Drawing-buffer height in pixels, used to size point sprites in world units. */
+  get viewportHeight() {
+    return this.canvas.height;
+  }
+
   setBackground(color) {
     this.atmosphere.uFogColor.value.set(color);
     this.scene.fog.color.set(color);
