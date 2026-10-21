@@ -3,14 +3,16 @@ import vertexShader from './shaders/mote.vert.glsl?raw';
 import fragmentShader from './shaders/mote.frag.glsl?raw';
 import { premultipliedGlow } from '../shared/blending.js';
 
-/** Ink-like dots that blush to a hot colour where `heat` is high. */
+/** Ink-like dots that blush to a hot colour where `heat` is high; scaled by the swarm's visibility. */
 export class MoteMesh {
   constructor(swarm, heat, atmosphere) {
     const geometry = new THREE.BufferGeometry();
     this.positions = new THREE.BufferAttribute(swarm.positions, 3).setUsage(THREE.DynamicDrawUsage);
     this.heat = new THREE.BufferAttribute(heat, 1).setUsage(THREE.DynamicDrawUsage);
+    this.visibility = new THREE.BufferAttribute(swarm.visibility, 1).setUsage(THREE.DynamicDrawUsage);
     geometry.setAttribute('position', this.positions);
     geometry.setAttribute('aHeat', this.heat);
+    geometry.setAttribute('aVisibility', this.visibility);
     geometry.setAttribute('aSeed', new THREE.BufferAttribute(swarm.seeds, 1));
 
     this.material = new THREE.ShaderMaterial({
@@ -42,5 +44,6 @@ export class MoteMesh {
     this.material.uniforms.uViewportHeight.value = viewportHeight;
     this.positions.needsUpdate = true;
     this.heat.needsUpdate = true;
+    this.visibility.needsUpdate = true;
   }
 }

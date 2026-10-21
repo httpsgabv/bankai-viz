@@ -22,6 +22,11 @@ npm run dev
 - **Shikai — "Okiro, Benihime"**: Urahara's cane sword aims at the cursor in a washi-paper room of drifting ink. Tap for *Nake, Benihime* — a crimson crescent that tears through and stains the ink. Hold for *Chikasumi no Tate* — a honeycomb blood-mist shield that shatters when released.
 - **Bankai — "Kannonbiraki Benihime Aratame"**: Benihime restructures what she touches. The cursor is her needle, trailing a crimson thread and parting the voxel sculpture. Tap to re-form it (sphere, ring, camellia, helix, cube frame) in a wave from the touch point. Hold to cut it in two (*Kirisaki*); release to sew it back with crimson stitches.
 
+## Haineko
+
+- **Shikai — "Unare, Haineko"**: the blade crumbles into a cloud of ash that prowls after the cursor. Fast-moving ash glows like embers and slices the floating blocks it passes through. Tap to lash the ash along your motion; hold to wind it into a flat, spinning cutting vortex.
+- **Bankai**: never revealed in the story, so it shows as locked.
+
 Pick a zanpakutō from the title in the top-left (or press `Z`). Scroll moves the cursor's 3D target nearer or farther. Shortcuts: `1`/`2` switch release, `Z` next zanpakutō, `Space` replay, `H` hide UI, `C` config panel.
 
 ## Structure
@@ -45,13 +50,15 @@ src/
     gas/          Point-sprite poison gas
     neural/       Nerve web lines, nodes and pulses
     environment/  Fog-blended floor with soft shadow
-  effects/        Simulation + rendering glue: PetalStorm, PoisonCloud, NeuralWeb, MoteField
+  effects/        Simulation + rendering glue: PetalStorm, PoisonCloud, NeuralWeb, MoteField,
+                  DisintegratingBlade (blade ⇄ particles), SliceTargets
   zanpakuto/
     Release.js    Base class for any release
     registry.js   List of zanpakutō
     senbonzakura/ Descriptor, shikai, bankai, param schemas
     ashisogiJizo/ Descriptor, shikai, bankai, ToxicField, param schemas
     benihime/     Descriptor, shikai, bankai, param schemas
+    haineko/      Descriptor, shikai (bankai locked), param schema
   ui/             HUD, release switch, banner, schema-driven control panel
   utils/          Math, Sequence (timelines), ParamSource (tweakable params), etc.
 ```
@@ -59,5 +66,5 @@ src/
 ## Adding a zanpakutō
 
 1. Create `src/zanpakuto/<name>/` with an `index.js` descriptor (same shape as `senbonzakura/index.js`, including a `theme`).
-2. Implement each release as a subclass of `Release` with a param schema — the config panel is generated from it.
+2. Implement each release as a subclass of `Release` with a param schema — the config panel is generated from it. A release that was never revealed can be listed with `locked: true`.
 3. Add the descriptor to `src/zanpakuto/registry.js`.

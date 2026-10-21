@@ -36,8 +36,11 @@ export class ParticleSwarm {
     this.velocities.set([vx, vy, vz], k);
   }
 
-  /** Pushes free petals away from a point with a linear falloff. */
-  impulse(center, strength, radius) {
+  /**
+   * Pushes free particles near `center` with a linear falloff: away from the point,
+   * or along `direction` (plus a little outward spread) when one is given.
+   */
+  impulse(center, strength, radius, direction = null) {
     const P = this.positions;
     const V = this.velocities;
     for (let i = 0; i < this.count; i++) {
@@ -49,10 +52,17 @@ export class ParticleSwarm {
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 1e-4;
       const falloff = 1 - dist / radius;
       if (falloff <= 0) continue;
-      const push = (strength * falloff * (0.6 + this.seeds[i] * 0.8)) / dist;
+      const amount = strength * falloff * (0.6 + this.seeds[i] * 0.8);
+      const outward = direction ? 0.25 : 1;
+      const push = (amount * outward) / dist;
       V[k] += dx * push;
       V[k + 1] += dy * push;
       V[k + 2] += dz * push;
+      if (direction) {
+        V[k] += direction.x * amount;
+        V[k + 1] += direction.y * amount;
+        V[k + 2] += direction.z * amount;
+      }
     }
   }
 

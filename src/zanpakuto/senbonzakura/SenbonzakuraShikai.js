@@ -3,22 +3,17 @@ import { Release } from '../Release.js';
 import { shikaiSchema } from './schemas/shikaiSchema.js';
 import { BladeProfile } from '../../render/blades/BladeProfile.js';
 import { Katana } from '../../render/blades/Katana.js';
-import { sampleBladeAnchors, transformAnchors } from '../../render/blades/sampleBladeAnchors.js';
 import { PetalStorm } from '../../effects/PetalStorm.js';
-import { DissolveEmitter } from '../../sim/DissolveEmitter.js';
+import { DisintegratingBlade } from '../../effects/DisintegratingBlade.js';
 import { PointerTrail } from '../../sim/PointerTrail.js';
 import { SeekForce } from '../../sim/forces/SeekForce.js';
 import { SwirlForce } from '../../sim/forces/SwirlForce.js';
 import { FlowForce } from '../../sim/forces/FlowForce.js';
 import { BoundsForce } from '../../sim/forces/BoundsForce.js';
 import { TrailTargets } from '../../sim/targets/TrailTargets.js';
-import { AnchorTargets } from '../../sim/targets/AnchorTargets.js';
-import { Sequence } from '../../utils/Sequence.js';
-import { easeInOutCubic } from '../../utils/math.js';
 
 const PROFILE = new BladeProfile({ length: 3.6, width: 0.17, thickness: 0.04, curvature: 0.035 });
 const KATANA_POSITION = new THREE.Vector3(0, 1.3, 0);
-const IDENTITY = new THREE.Matrix4();
 /** Where petals drift when the cursor is away. */
 const ROAM_CENTER = new THREE.Vector3(0, 2.8, 0);
 const ROAM_RADIUS = 3.5;
@@ -28,9 +23,6 @@ const ROAM_RADIUS = 3.5;
  * petals that streams after the cursor. The hilt stays behind.
  */
 export class SenbonzakuraShikai extends Release {
-  #dissolve = new Float32Array(1);
-  #returning = false;
-
   constructor(context) {
     super(context, shikaiSchema);
 
@@ -38,6 +30,7 @@ export class SenbonzakuraShikai extends Release {
     this.katana.group.position.copy(KATANA_POSITION);
     this.katana.group.rotation.set(0, 0.55, -0.06);
     this.root.add(this.katana.group);
+    this.blade = new DisintegratingBlade({ katana: this.katana, profile: PROFILE });
 
     this.trail = new PointerTrail(256);
     this.seek = new SeekForce();
@@ -47,7 +40,7 @@ export class SenbonzakuraShikai extends Release {
     this.bounds.radius = ROAM_RADIUS;
 
     this.#build();
-    this.sequence = this.#releaseSequence().start();
+    this.sequence = this.blade.releaseSequence();
   }
 
   get view() {
@@ -62,10 +55,9 @@ export class SenbonzakuraShikai extends Release {
     const { pointer } = this.context;
     this.trail.update(dt, pointer.world);
     this.sequence.update(dt);
-    this.#followDepth();
-
-    this.katana.dissolve = this.#dissolve[0];
-    this.emitter.sync(this.#dissolve, 1.5);
+    // Keep the katana on the same depth plane as the petals when the user scrolls.
+    this.katana.group.position.copy(KATANA_POSITION).add(pointer.depthOffset);
+    this.blade.sync(1.5);
 
     this.#syncForces();
     this.storm.update(dt, time);
@@ -73,12 +65,7 @@ export class SenbonzakuraShikai extends Release {
   }
 
   replay() {
-    this.sequence = new Sequence([
-      { name: 'gather', duration: 1.3, enter: () => (this.#returning = true) },
-      { name: 'reform', duration: 1.1, update: (p) => (this.#dissolve[0] = 1 - easeInOutCubic(p)) },
-      { name: 'sealed', duration: 0.5, enter: () => (this.#returning = false) },
-      ...this.#releaseSteps(),
-    ]).start();
+    this.sequence = this.blade.reformSequence();
   }
 
   onPointerDown() {
@@ -107,28 +94,9 @@ export class SenbonzakuraShikai extends Release {
     });
     this.root.add(this.storm.object);
 
-    // Anchors are sampled in blade space and re-projected every frame, so they move with the katana.
-    const anchors = sampleBladeAnchors(PROFILE, [IDENTITY], count);
-    this.localAnchors = anchors.anchors.slice();
-    transformAnchors(this.localAnchors, this.katana.bladeMatrix, anchors.anchors);
-    this.emitter = new DissolveEmitter(this.storm.swarm, anchors);
+    this.blade.bind(this.storm.swarm);
     this.trailTargets = new TrailTargets(this.trail, count);
-    this.anchorTargets = new AnchorTargets(anchors.anchors);
     this.#applyAppearance();
-  }
-
-  /** Keeps the katana on the same depth plane as the petals when the user scrolls. */
-  #followDepth() {
-    this.katana.group.position.copy(KATANA_POSITION).add(this.context.pointer.depthOffset);
-    transformAnchors(this.localAnchors, this.katana.bladeMatrix, this.emitter.anchors);
-  }
-
-  #releaseSequence() {
-    return new Sequence([{ name: 'sealed', duration: 0.9 }, ...this.#releaseSteps()]);
-  }
-
-  #releaseSteps() {
-    return [{ name: 'scatter', duration: 2.4, update: (p) => (this.#dissolve[0] = easeInOutCubic(p)) }];
   }
 
   #syncForces() {
@@ -136,8 +104,8 @@ export class SenbonzakuraShikai extends Release {
     const { swarm } = this.storm;
     swarm.drag = 1.1;
 
-    if (this.#returning) {
-      this.seek.targets = this.anchorTargets;
+    if (this.blade.returning) {
+      this.seek.targets = this.blade.anchorTargets;
       this.seek.strength = 7;
       this.seek.maxSpeed = 24;
       this.seek.slowRadius = 0.6;

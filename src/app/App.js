@@ -60,7 +60,7 @@ export class App {
   activate(releaseId) {
     if (releaseId === this.#releaseId) return;
     const definition = this.zanpakuto.releases.find((release) => release.id === releaseId);
-    if (!definition) return;
+    if (!definition || definition.locked) return;
 
     this.#release?.dispose();
     const release = definition.create({ stage: this.stage, pointer: this.pointer, floorY: FLOOR_Y });

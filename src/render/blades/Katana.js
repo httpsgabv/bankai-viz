@@ -5,9 +5,10 @@ import { createHilt } from './createHilt.js';
 
 /** A single sword: dissolvable blade plus hilt. */
 export class Katana {
-  constructor({ profile, atmosphere }) {
+  /** @param glow colour of the edge where the blade is dissolving */
+  constructor({ profile, atmosphere, glow }) {
     this.group = new THREE.Group();
-    this.material = createBladeMaterial(atmosphere);
+    this.material = createBladeMaterial(atmosphere, glow ? { glow } : {});
     this.blade = new THREE.Mesh(createBladeGeometry(profile), this.material);
     this.hilt = createHilt(profile);
     this.group.add(this.blade, this.hilt);

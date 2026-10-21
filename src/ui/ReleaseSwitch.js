@@ -13,9 +13,14 @@ export class ReleaseSwitch {
       const button = el('button', {
         class: 'release-switch__option',
         text: release.title,
-        attrs: { type: 'button' },
+        attrs: { type: 'button', title: release.locked ? release.lockedNote ?? 'Locked' : release.title },
         on: { click: () => onSelect(release.id) },
       });
+      // Releases never shown in the story stay visible but can't be picked.
+      if (release.locked) {
+        button.disabled = true;
+        button.classList.add('is-locked');
+      }
       button.dataset.index = index;
       this.#buttons.set(release.id, button);
       this.element.append(button);

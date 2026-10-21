@@ -1,14 +1,16 @@
 import { randomUnitVector } from '../../utils/math.js';
 
 /**
- * Gives a share of the petals (`cohesion`) an orbit around a moving center.
- * `gather` (0 → 1) pulls every petal in and tightens the orbits into a dense sphere.
+ * Gives a share of the particles (`cohesion`) an orbit around a moving center.
+ * `gather` (0 → 1) pulls every particle in and tightens the orbits into a dense sphere.
+ * `flatten` (0 → 1) squashes the orbits into a horizontal disc.
  */
 export class OrbitTargets {
   radius = 2.4;
   cohesion = 0.5;
   gather = 0;
   orbitSpeed = 1.2;
+  flatten = 0;
 
   constructor(count, center) {
     this.center = center;
@@ -33,7 +35,7 @@ export class OrbitTargets {
     const k = i * 6;
 
     out[0] = this.center.x + B[k] * c + B[k + 3] * s;
-    out[1] = this.center.y + B[k + 1] * c + B[k + 4] * s;
+    out[1] = this.center.y + (B[k + 1] * c + B[k + 4] * s) * (1 - 0.85 * this.flatten);
     out[2] = this.center.z + B[k + 2] * c + B[k + 5] * s;
     return weight;
   }
